@@ -1,6 +1,6 @@
 # Ethernet Example for ESP-IDF 4.1 and better
 
-This is an example of using the Olimex ESP32-POE card using Espressif ESP-IDF version 4.1 and higher.
+This is an example of using the Olimex ESP32-POE card using Espressif ESP-IDF version 4.1 and higher. It applies to the ISO and non-ISO versions.
 
 In the Olimex repo https://github.com/OLIMEX/ESP32-POE , there are several requests for examples that work with version 4.1, which first showed up in August of 2019.
 
@@ -10,7 +10,10 @@ not super trivial to figure out how to configure ethernet, between the old form 
 These instructions are correct as of Jan 6, 2021 with ESP-IDF 'latest'. I can't say if they work on ESP-IDF 4.1, or 4.2 release, and if
 you want to submit a pull request feel free. They also worked very nicely on my 'rev D' board, and I assume they'll work well with others.
 
+
 ## sdkconfig for Ethernet component
+
+This configuration is under Components / Ethernet.
 
 As Espressif keeps changing `menuconfig` and adding more features, it's best to describe the menu entries that must be changed
 and what to change them to. That means you don't have to use the `sdkconfig` I've checked in here, you can delete it,
@@ -19,13 +22,15 @@ then go through and change the menu entries that you need.
 I've listed the exact settings I have, you'll have to figure out what the defaults currently are in ESP-IDF.
 
 - Support ESP32 Internal EMAC controller (true)
--- PHY interface (RMII)
--- RMII clock mode (Output RMII clock from internal)
--- Output RMII clock from GPI00 (DISABLED)
--- RMII clock GPIO numer (17)
--- Ethernet DMA buffer size bytes (1524)
--- Amount of Ethernet DMA Rx buffers (4)
--- Amount of Ethernet DMA Tx buffers (4)
+  - PHY interface (RMII)
+  - RMII clock mode (Output RMII clock from internal)
+  - Output RMII clock from GPI00 (DISABLED)
+  - RMII clock GPIO numer (17)
+  - Ethernet DMA buffer size bytes (1524)
+  - Amount of Ethernet DMA Rx buffers (4)
+  - Amount of Ethernet DMA Tx buffers (4)
+- Support SPI to Ethernet module (DISABLED)
+- Support OpenCores Ethernet MAC (DISABLED)
 
 A few notes. 
 
@@ -33,7 +38,9 @@ The default in this section is RMII, but it's using an RMII Input clock, so that
 
 There is a forum post from 2019 about packet corruption if the DMA buffer size is less than internet MTU. The default in that field is 512. I don't have evidence that bug still exists, but I've raised the number to 1524 anyway. According to the post, the smaller value works, until you're doing a large transfer (notably a OTA update) at which point the OTA update never succeeds. I've dropped the number of buffers a little to make up for it.
 
-## sdkconfig for Example
+## sdkconfig for Example 
+
+These entries are in the top level of Menuconfig.
 
 - Ethernet Type (Internal EMAC)
 - Ethernet PHY device (LAN8720)
@@ -79,6 +86,15 @@ I (5884) eth_example: ~~~~~~~~~~~
 ```
 
 Now you can ping your ESP32 in the terminal by entering `ping 192.168.2.151` (it depends on the actual IP address you get).
+
+# References
+
+
+https://github.com/OLIMEX/ESP32-POE/issues/20 - request for 4.1 example
+
+https://github.com/OLIMEX/ESP32-POE/issues/7 - example doesn't build against latest esp-idf master (2019)
+
+https://github.com/espressif/esp-idf/issues/4454 - corrupt heap errors in Lan8710a
 
 # License
 
